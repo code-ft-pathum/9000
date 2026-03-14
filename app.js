@@ -22,29 +22,18 @@ const $ = id => document.getElementById(id);
 function toggleMusic() {
   const music = $('bg-music');
   const btn = $('music-toggle');
+  if (!music || !btn) return;
   if (music.paused) {
-    music.play();
-    btn.classList.add('playing');
+    music.play().then(() => btn.classList.add('playing')).catch(() => {});
   } else {
     music.pause();
     btn.classList.remove('playing');
   }
 }
 
-const sfx = {
-  flip: 'https://www.soundjay.com/buttons/button-11.mp3',
-  match: 'https://www.soundjay.com/buttons/button-09.mp3',
-  success: 'https://www.soundjay.com/buttons/button-3.mp3',
-  pop: 'https://www.soundjay.com/buttons/button-4.mp3',
-  catch: 'https://www.soundjay.com/buttons/button-10.mp3',
-  tap: 'https://www.soundjay.com/buttons/button-1.mp3',
-  win: 'https://www.soundjay.com/buttons/button-2.mp3'
-};
-
+// Removing external SFX to prevent 404 blocks
 function playSound(type) {
-  const audio = new Audio(sfx[type]);
-  audio.volume = 0.4;
-  audio.play().catch(e => console.log('Audio play failed:', e));
+  console.log('SFX triggered:', type);
 }
 
 // ── Loader ─────────────────────────────────────────────
@@ -87,15 +76,23 @@ function startTypewriter() {
       typeEl.textContent += text[char++];
     } else {
       clearInterval(interval);
-      // Only cycle if it's not the last message, or pause longer on last
+      // If there are more messages, cycle them
       if (msgIdx < loveMessages.length - 1) {
         setTimeout(() => {
           msgIdx++;
           startTypewriter();
         }, 3500);
       } else {
-        // Last message reached. Stay here or restart after a very long delay.
-        console.log("Final message reached. Ready for quest.");
+        // FINAL MESSAGE FINISHED: Now reveal the button
+        const btn = $('start-quest-btn');
+        if (btn) {
+          btn.style.display = 'inline-block';
+          btn.style.opacity = '0';
+          setTimeout(() => {
+            btn.style.transition = 'opacity 1s ease';
+            btn.style.opacity = '1';
+          }, 100);
+        }
       }
     }
   }, 60);
@@ -154,24 +151,51 @@ function initPetals() {
 
 // ── Quest Transitions ─────────────────────────────────
 function startTheQuest(e) {
-  if (e) e.preventDefault();
-  
-  const music = $('bg-music');
-  if (music) {
-    music.currentTime = 0;
-    music.play().then(() => {
-      $('music-toggle').classList.add('playing');
-    }).catch(e => console.log("Audio blocked."));
+  if (e) {
+    if (e.preventDefault) e.preventDefault();
+    if (e.stopPropagation) e.stopPropagation();
   }
   
-  playSound('success');
-  $('hero-section').style.display = 'none';
-  $('quest-section').style.display = 'flex';
-  showLevel(0);
+  console.log("Quest Start Triggered");
+
+  // 1. Force the transition by clearing any CSS conflicts
+  const hero = $('hero-section');
+  const quest = $('quest-section');
+  
+  if (hero) {
+    hero.setAttribute('style', 'display: none !important');
+  }
+  
+  if (quest) {
+    quest.setAttribute('style', 'display: flex !important');
+  }
+  
+  // 2. Load the first game (Level 1)
+  currentLevel = 1;
+  showLevel(currentLevel);
+
+  // 3. Audio (Try to play, but don't care if it fails)
+  try {
+    const music = $('bg-music');
+    if (music) {
+      music.loop = true;
+      music.play().then(() => {
+        const toggle = $('music-toggle');
+        if (toggle) toggle.classList.add('playing');
+      }).catch(err => {
+        console.warn("Music blocked - normal for most browsers.");
+      });
+    }
+  } catch (err) {}
+
+  return false;
 }
 
-// Ensure the button type is button and not submit if it was inside a form
-window.addEventListener('load', () => {
+// Ensure global scope
+window.startTheQuest = startTheQuest;
+
+// Fallback in case the onclick in HTML fails
+window.addEventListener('DOMContentLoaded', () => {
   const btn = $('start-quest-btn');
   if (btn) {
     btn.onclick = startTheQuest;

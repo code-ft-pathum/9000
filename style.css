@@ -93,7 +93,7 @@ main.hidden { display: none; }
 section {
   width: 100%;
   height: 100vh;
-  display: flex !important;
+  display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
@@ -114,7 +114,7 @@ section.auto-height {
   font-size: clamp(3.5rem, 14vw, 8rem);
   color: var(--rose-deep);
   line-height: 1;
-  margin-bottom: 20px;
+  margin-bottom: 5px;
 }
 .hero-main span {
   font-family: 'Cormorant Garamond', serif;
@@ -349,7 +349,7 @@ section.auto-height {
 }
 
 /* ── Shared UI ────────────────────────────────────── */
-.quest-btn, .btn-primary {
+.quest-btn {
   background: linear-gradient(135deg, var(--rose-mid), var(--rose-deep));
   color: white; border: none;
   padding: 14px 35px; border-radius: 50px;
@@ -357,6 +357,17 @@ section.auto-height {
   cursor: pointer; box-shadow: 0 8px 20px rgba(255,117,140,0.3);
   transition: all 0.3s;
 }
+
+.btn-primary {
+  display: none; /* Hidden during intro */
+  background: linear-gradient(135deg, var(--rose-mid), var(--rose-deep));
+  color: white; border: none;
+  padding: 14px 35px; border-radius: 50px;
+  font-size: 1.1rem; font-weight: 600;
+  cursor: pointer; box-shadow: 0 8px 20px rgba(255,117,140,0.3);
+  transition: all 0.3s;
+}
+
 .quest-btn:hover, .btn-primary:hover { transform: translateY(-3px); }
 
 input {
