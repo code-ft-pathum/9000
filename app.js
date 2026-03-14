@@ -18,6 +18,35 @@ let currentLevel = 0;
 const totalQuestLevels = 15; // 0 to 14
 const $ = id => document.getElementById(id);
 
+// ── Music & Sounds ────────────────────────────────────
+function toggleMusic() {
+  const music = $('bg-music');
+  const btn = $('music-toggle');
+  if (music.paused) {
+    music.play();
+    btn.classList.add('playing');
+  } else {
+    music.pause();
+    btn.classList.remove('playing');
+  }
+}
+
+const sfx = {
+  flip: 'https://www.soundjay.com/buttons/button-11.mp3',
+  match: 'https://www.soundjay.com/buttons/button-09.mp3',
+  success: 'https://www.soundjay.com/buttons/button-3.mp3',
+  pop: 'https://www.soundjay.com/buttons/button-4.mp3',
+  catch: 'https://www.soundjay.com/buttons/button-10.mp3',
+  tap: 'https://www.soundjay.com/buttons/button-1.mp3',
+  win: 'https://www.soundjay.com/buttons/button-2.mp3'
+};
+
+function playSound(type) {
+  const audio = new Audio(sfx[type]);
+  audio.volume = 0.4;
+  audio.play().catch(e => console.log('Audio play failed:', e));
+}
+
 // ── Loader ─────────────────────────────────────────────
 window.addEventListener('load', () => {
   const progress = $('ld-progress');
@@ -58,10 +87,16 @@ function startTypewriter() {
       typeEl.textContent += text[char++];
     } else {
       clearInterval(interval);
-      setTimeout(() => {
-        msgIdx = (msgIdx + 1) % loveMessages.length;
-        startTypewriter();
-      }, 3500);
+      // Only cycle if it's not the last message, or pause longer on last
+      if (msgIdx < loveMessages.length - 1) {
+        setTimeout(() => {
+          msgIdx++;
+          startTypewriter();
+        }, 3500);
+      } else {
+        // Last message reached. Stay here or restart after a very long delay.
+        console.log("Final message reached. Ready for quest.");
+      }
     }
   }, 60);
 }
@@ -118,13 +153,33 @@ function initPetals() {
 }
 
 // ── Quest Transitions ─────────────────────────────────
-$('start-quest-btn').onclick = () => {
+function startTheQuest(e) {
+  if (e) e.preventDefault();
+  
+  const music = $('bg-music');
+  if (music) {
+    music.currentTime = 0;
+    music.play().then(() => {
+      $('music-toggle').classList.add('playing');
+    }).catch(e => console.log("Audio blocked."));
+  }
+  
+  playSound('success');
   $('hero-section').style.display = 'none';
   $('quest-section').style.display = 'flex';
   showLevel(0);
-};
+}
+
+// Ensure the button type is button and not submit if it was inside a form
+window.addEventListener('load', () => {
+  const btn = $('start-quest-btn');
+  if (btn) {
+    btn.onclick = startTheQuest;
+  }
+});
 
 function nextLevel() {
+  playSound('success');
   currentLevel++;
   if (currentLevel >= totalQuestLevels) {
     finishQuest();
@@ -134,10 +189,15 @@ function nextLevel() {
 }
 
 function showLevel(lvl) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  $(`s${lvl}`).classList.add('active');
-  $('progress-fill').style.width = (lvl / (totalQuestLevels - 1) * 100) + '%';
-  initLevelGame(lvl);
+  const screens = document.querySelectorAll('.screen');
+  screens.forEach(s => s.classList.remove('active'));
+  
+  const target = $(`s${lvl}`);
+  if (target) {
+    target.classList.add('active');
+    $('progress-fill').style.width = (lvl / (totalQuestLevels - 1) * 100) + '%';
+    initLevelGame(lvl);
+  }
 }
 
 function initLevelGame(lvl) {
@@ -166,10 +226,12 @@ function initMemory() {
     card.className = 'card';
     card.onclick = () => {
       if (flipped.length < 2 && !card.classList.contains('flipped')) {
+        playSound('flip');
         card.textContent = icon; card.classList.add('flipped');
         flipped.push(card);
         if (flipped.length === 2) {
           if (flipped[0].textContent === flipped[1].textContent) {
+            playSound('match');
             flipped = [];
             if (document.querySelectorAll('.flipped').length === 16) setTimeout(nextLevel, 800);
           } else {
@@ -203,6 +265,7 @@ function initSimon() {
 }
 function padTap(id) {
   if ($('simon-msg').textContent !== "Your turn!") return;
+  playSound('tap');
   const p = $('p' + id); p.classList.add('lit'); setTimeout(() => p.classList.remove('lit'), 200);
   userSeq.push(id);
   if (userSeq[userSeq.length - 1] !== simonSeq[userSeq.length - 1]) initSimon();
@@ -247,7 +310,12 @@ let rScore = 0;
 function playRps(move) {
   const moves = ['🪨', '📄', '✂️'];
   const ai = moves[Math.floor(Math.random() * 3)];
-  if ((move === '🪨' && ai === '✂️') || (move === '📄' && ai === '🪨') || (move === '✂️' && ai === '📄')) rScore++;
+  if ((move === '🪨' && ai === '✂️') || (move === '📄' && ai === '🪨') || (move === '✂️' && ai === '📄')) {
+    playSound('win');
+    rScore++;
+  } else {
+    playSound('tap');
+  }
   $('rps-res').textContent = `AI chose ${ai}. Result: ${rScore}/2`;
   if (rScore >= 2) setTimeout(nextLevel, 800);
 }
@@ -291,6 +359,7 @@ function initCatch() {
       // Collision check
       if (hRect.bottom > bRect.top && hRect.top < bRect.bottom &&
         hRect.left < bRect.right && hRect.right > bRect.left) {
+        playSound('catch');
         cScore++;
         if ($('c-score')) $('c-score').textContent = `Caught: ${cScore}/5`;
         h.remove();
@@ -320,6 +389,7 @@ function moveBasket(e) {
 // L11: Tap
 let taps = 0;
 function heartTap() {
+  playSound('tap');
   taps++; $('tap-count').textContent = `${taps}/10`;
   $('tap-heart').style.transform = "scale(1.4)";
   setTimeout(() => $('tap-heart').style.transform = "scale(1)", 100);
@@ -351,6 +421,7 @@ function initBubbles() {
 
     b.onclick = (e) => {
       e.stopPropagation();
+      playSound('pop');
       if (isBomb) {
         // Reset level on cloud hit
         initBubbles();
@@ -392,18 +463,27 @@ function check14() {
 // ── Conclusion ────────────────────────────────────────
 function finishQuest() {
   $('quest-section').style.display = 'none';
+  
+  // Enable scrolling for the big finale
+  document.body.classList.add('allow-scroll');
+  
   const gallery = $('gallery');
   const wish = $('final-wish');
-  if (gallery) gallery.style.display = 'block';
-  if (wish) wish.style.display = 'block';
-
+  if (gallery) {
+    gallery.style.display = 'block';
+    gallery.classList.add('auto-height');
+  }
+  if (wish) {
+    wish.style.display = 'block';
+    wish.classList.add('auto-height');
+  }
+  
   populateGallery();
   initScrollReveal();
-
-  // Smooth scroll to results
+  
   setTimeout(() => {
     gallery.scrollIntoView({ behavior: 'smooth' });
-  }, 200);
+  }, 300);
 }
 
 function populateGallery() {

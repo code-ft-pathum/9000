@@ -35,9 +35,16 @@ body {
   background-size: 400% 400%;
   animation: gradientBG 15s ease infinite;
   color: var(--text-dark);
-  overflow-x: hidden;
+  overflow: hidden; /* Prevent scrolling by default */
+  height: 100vh;
+  width: 100vw;
   display: flex;
   flex-direction: column;
+}
+
+body.allow-scroll {
+  overflow-y: auto;
+  height: auto;
 }
 
 @keyframes gradientBG {
@@ -85,7 +92,7 @@ main.hidden { display: none; }
 
 section {
   width: 100%;
-  min-height: 100vh;
+  height: 100vh;
   display: flex !important;
   flex-direction: column;
   justify-content: center;
@@ -94,6 +101,12 @@ section {
   text-align: center;
   position: relative;
   box-sizing: border-box;
+  overflow: hidden;
+}
+
+section.auto-height {
+  height: auto;
+  min-height: 100vh;
 }
 
 .hero-main {
@@ -269,6 +282,33 @@ section {
   padding: 10px 14px;
   font-size: 1rem;
   margin: 2px;
+}
+
+.music-btn {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: var(--glass);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10000;
+  transition: all 0.3s;
+  font-size: 1.5rem;
+}
+.music-btn:hover { transform: scale(1.1); }
+.music-btn.playing #music-icon { animation: rotateMusic 3s linear infinite; }
+
+@keyframes rotateMusic {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
 .simon-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; max-width: 240px; margin: 0 auto 20px; }
