@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>9000 Days of Loving Sachini ♡</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400&family=Quicksand:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- Dreamy Loader -->
+<div id="loader">
+  <div class="loader-heart">🌸</div>
+  <h1 class="loader-title">9000 Days of You</h1>
+  <p class="loader-subtitle">The world became a masterpiece 9000 days ago…</p>
+  <div class="loader-bar"><span id="ld-progress"></span></div>
+</div>
+
+<!-- Floating petals & hearts -->
+<canvas id="petals-canvas"></canvas>
+
+<main id="content" class="hidden">
+  
+  <!-- Hero Section -->
+  <section class="hero" id="hero-section">
+    <h1 class="hero-main">Happy 9000 Days,<br><span>Sachini</span></h1>
+    <p class="hero-subtitle">You've been breathing magic into this world for exactly 9000 days. Ready for your birthday mystery?</p>
+
+    <div class="stats">
+      <div class="stat-item">
+        <span class="stat-big">9,000</span>
+        <span class="stat-label">Days of Life</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-big">Unique</span>
+        <span class="stat-label">Soul & Spirit</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-big">∞</span>
+        <span class="stat-label">Infinite Love</span>
+      </div>
+    </div>
+
+    <div id="typewriter"></div>
+
+    <button class="btn-primary" id="start-quest-btn">✨ Start the Quest ✨</button>
+  </section>
+
+  <!-- Quest Container -->
+  <section id="quest-section">
+    <div id="quest-card">
+      <div class="progress-bar"><div id="progress-fill" class="progress-fill"></div></div>
+
+      <!-- Screen 0: Start -->
+      <div id="s0" class="screen">
+        <div style="font-size: 5rem; margin-bottom: 20px;">💘</div>
+        <h2>My Love's Quest</h2>
+        <p>Unlock 14 levels of joy and memories. Are you ready to see what's waiting, Sachini?</p>
+        <button class="quest-btn" onclick="nextLevel()">Start Now ♡</button>
+      </div>
+
+      <!-- Screen 1: Riddle -->
+      <div id="s1" class="screen">
+        <h2>🌷 Sweet Riddle</h2>
+        <p>We finish each other's...</p>
+        <input type="text" id="in1" placeholder="Type the secret word..." />
+        <button class="quest-btn" onclick="check1()">Unlock 💭</button>
+      </div>
+
+      <!-- Screen 2: Memory -->
+      <div id="s2" class="screen">
+        <h2>🌼 Memory Meadow</h2>
+        <p>Find the pairs of things that remind me of you!</p>
+        <div id="memory-grid" class="card-grid"></div>
+      </div>
+
+      <!-- Screen 3: Rhythm -->
+      <div id="s3" class="screen">
+        <h2>🌹 Heartbeat Rhythm</h2>
+        <p id="simon-msg">Watch the sequence of colors...</p>
+        <div class="simon-grid">
+          <div class="pad" id="p0" style="background:var(--pink-1)" onclick="padTap(0)"></div>
+          <div class="pad" id="p1" style="background:var(--pink-3)" onclick="padTap(1)"></div>
+          <div class="pad" id="p2" style="background:var(--mint)" onclick="padTap(2)"></div>
+          <div class="pad" id="p3" style="background:var(--yellow)" onclick="padTap(3)"></div>
+        </div>
+      </div>
+
+      <!-- Screen 4: Quiz -->
+      <div id="s4" class="screen">
+        <h2>💎 Soulmate Quiz</h2>
+        <p id="q-text">Who is the most beautiful girl in the entire universe?</p>
+        <div id="q-btns" style="display:flex; flex-direction:column; gap:10px;"></div>
+      </div>
+
+      <!-- Screen 5: Unscramble -->
+      <div id="s5" class="screen">
+        <h2>🪄 Love Notes</h2>
+        <p>O V E L  O U Y  R E V E R O F</p>
+        <input type="text" id="in5" placeholder="Unscramble the message..." />
+        <button class="quest-btn" onclick="check5()">Solve 💌</button>
+      </div>
+
+      <!-- Screen 6: Hangman -->
+      <div id="s6" class="screen">
+        <h2>🎭 Secret Word</h2>
+        <div id="h-word" style="font-size:2.2rem; margin:30px 0; letter-spacing:6px; color:var(--rose-deep); font-family:'Playfair Display', serif;"></div>
+        <div id="h-keys" style="display:flex; flex-wrap:wrap; justify-content:center; gap:8px;"></div>
+      </div>
+
+      <!-- Screen 7: RPS -->
+      <div id="s7" class="screen">
+        <h2>🤜 Destiny Game</h2>
+        <p>Win 2 rounds to prove we are meant to be!</p>
+        <div style="font-size:3.5rem; margin:25px 0; cursor:pointer; display:flex; justify-content:center; gap:20px;">
+          <span onclick="playRps('🪨')">🪨</span>
+          <span onclick="playRps('📄')">📄</span>
+          <span onclick="playRps('✂️')">✂️</span>
+        </div>
+        <p id="rps-res" style="font-weight:600;">You 0 - AI 0</p>
+      </div>
+
+      <!-- Screen 8: Maze -->
+      <div id="s8" class="screen">
+        <h2>🗺️ Path to My Heart</h2>
+        <p>Guide the flower to its home!</p>
+        <div id="maze-area" onclick="nextLevel()" style="width:280px; height:280px; margin:0 auto; background:white; border:3px solid var(--rose-soft); position:relative; border-radius:30px; cursor:pointer;">
+          <div style="position:absolute; top:20px; left:20px; font-size:2rem;">🌸</div>
+          <div style="position:absolute; bottom:20px; right:20px; font-size:2rem;">💖</div>
+          <div style="position:absolute; top:45%; left:0; width:75%; height:12px; background:var(--rose-soft); border-radius:10px;"></div>
+        </div>
+      </div>
+
+      <!-- Screen 9: Number Guess -->
+      <div id="s9" class="screen">
+        <h2>🔮 Birthday Mystery</h2>
+        <p>I'm thinking of a number (1-100)...</p>
+        <input type="number" id="in9" placeholder="Guess it..." />
+        <button class="quest-btn" onclick="check9()">Guess ✨</button>
+        <p id="hint9" style="font-weight:600; color:var(--rose-deep);"></p>
+      </div>
+
+      <!-- Screen 10: Catch -->
+      <div id="s10" class="screen">
+        <h2>🧺 Catch the Kisses</h2>
+        <p>Capture the hearts falling for you!</p>
+        <div id="catch-area" 
+             onmousemove="moveBasket(event)" 
+             ontouchmove="moveBasket(event)" 
+             onclick="moveBasket(event)">
+          <div id="player-bucket">🧺</div>
+        </div>
+        <p id="c-score" style="font-weight:700;">Caught: 0/5</p>
+      </div>
+
+      <!-- Screen 11: Tap -->
+      <div id="s11" class="screen">
+        <h2>💘 Pulse of Love</h2>
+        <p>Tap the heart 10 times to send me love!</p>
+        <div id="tap-heart" onclick="heartTap()" style="font-size:6rem; margin:30px 0; cursor:pointer; transition:0.1s; user-select:none;">❤️</div>
+        <p id="tap-count" style="font-size:1.5rem; font-weight:700;">0/10</p>
+      </div>
+
+      <!-- Screen 12: Bubbles -->
+      <div id="s12" class="screen">
+        <h2>🫧 Dream Pop</h2>
+        <p>Pop 5 happy sparkles ✨ (Avoid the clouds 💣)</p>
+        <div id="bubble-area" style="width:100%; height:250px; background:rgba(255,255,255,0.3); border-radius:20px; position:relative; overflow:hidden;"></div>
+        <p id="b-score" style="font-weight:700; margin-top:10px;">Sparkles: 0/5</p>
+      </div>
+
+      <!-- Screen 13: Color -->
+      <div id="s13" class="screen">
+        <h2>🎨 Hue Harmony</h2>
+        <p>Select the color of the text:</p>
+        <h3 id="color-name" style="font-size:2.5rem; margin:20px; font-family:'Playfair Display', serif;">ROSE</h3>
+        <div id="color-btns" style="display:grid; grid-template-columns:1fr 1fr; gap:15px;"></div>
+      </div>
+
+      <!-- Screen 14: Final -->
+      <div id="s14" class="screen">
+        <h2>🧩 Conclusion</h2>
+        <p>What is the most important thing between us?</p>
+        <input type="text" id="in14" placeholder="One word..." />
+        <button class="quest-btn" onclick="check14()">Unlock Forever 🔓</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Gallery Section -->
+  <section id="gallery">
+    <h2 class="gallery-heading">9000 Days of Sachini</h2>
+    <p class="gallery-lead">Every single day of your 9000-day journey has been a step toward us. I cherish every moment.</p>
+    <div class="gallery-grid" id="photo-grid"></div>
+  </section>
+
+  <!-- Final Wish -->
+  <section class="final-wish" id="final-wish">
+    <div class="final-heart">💝</div>
+    <h3>Happy 9000th Day, My Love</h3>
+    <p class="final-letter">
+      Sachini, 
+      9000 days ago, you entered this world and changed it forever. 
+      I am so incredibly lucky that our paths crossed and that I get to celebrate this beautiful milestone with you.
+      
+      You are the most amazing woman I know—kind, beautiful, and full of life. 
+      Thank you for being my girlfriend and for making my world so much brighter.
+      
+      May your next 9000 days be filled with even more laughter, dreams come true, and us together.
+      
+      <strong>With all my love,</strong>
+      Your Soulmate ♡
+    </p>
+    <button class="btn-primary" onclick="window.scrollTo({top:0,behavior:'smooth'})">Read Again 🌸</button>
+  </section>
+
+</main>
+
+<script src="app.js"></script>
+</body>
+</html>
